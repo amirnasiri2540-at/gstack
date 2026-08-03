@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فلوچارت تیم AI — ساختار ماژولار v3</title>
+<style>
+  :root{
+    --bg:#f7f8fb; --card:#ffffff; --text:#1c2333; --muted:#6b7280; --line:#94a3b8;
+    --founder:#7c3aed; --founder-bg:#f3e8ff;
+    --claude:#2563eb; --claude-bg:#dbeafe;
+    --gpt:#059669; --gpt-bg:#d1fae5;
+    --gemini:#d97706; --gemini-bg:#fef3c7;
+    --stage:#475569; --stage-bg:#e2e8f0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0f1420; --card:#1a2233; --text:#e5e9f2; --muted:#9aa4b2; --line:#64748b;
+      --founder-bg:#3b2a5e; --claude-bg:#1e3a6e; --gpt-bg:#134e3a; --gemini-bg:#5c4308; --stage-bg:#2b3648;
+      --founder:#c4b5fd; --claude:#93c5fd; --gpt:#6ee7b7; --gemini:#fcd34d; --stage:#cbd5e1;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:Tahoma,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); padding:24px 12px; display:flex; flex-direction:column; align-items:center}
+  h1{font-size:1.15rem; margin-bottom:4px; text-align:center}
+  .sub{color:var(--muted); font-size:.8rem; margin-bottom:20px; text-align:center}
+  .flow{display:flex; flex-direction:column; align-items:center; width:100%; max-width:420px}
+  .box{width:100%; border-radius:12px; padding:10px 14px; text-align:center; border:2px solid; position:relative}
+  .box .who{font-size:.68rem; font-weight:bold; opacity:.85; letter-spacing:.5px}
+  .box .what{font-size:.92rem; font-weight:bold; margin-top:2px}
+  .box .desc{font-size:.72rem; color:var(--muted); margin-top:2px}
+  .founder{background:var(--founder-bg); border-color:var(--founder)} .founder .who{color:var(--founder)}
+  .claude{background:var(--claude-bg); border-color:var(--claude)} .claude .who{color:var(--claude)}
+  .gpt{background:var(--gpt-bg); border-color:var(--gpt)} .gpt .who{color:var(--gpt)}
+  .gemini{background:var(--gemini-bg); border-color:var(--gemini)} .gemini .who{color:var(--gemini)}
+  .stage{background:var(--stage-bg); border-color:var(--stage)} .stage .who{color:var(--stage)}
+  .arrow{color:var(--line); font-size:1.1rem; line-height:1; padding:5px 0}
+  .side{display:flex; align-items:center; gap:8px; width:100%}
+  .side .box{flex:1}
+  .side .feeder{flex:0 0 38%; border-style:dashed}
+  .side .feedarrow{color:var(--line); font-size:1rem}
+  .loop{border:2px dashed var(--gemini); border-radius:12px; padding:8px 12px; margin-top:6px; font-size:.72rem; color:var(--muted); text-align:center; width:100%}
+  .loop b{color:var(--gemini)}
+  .legend{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:22px; font-size:.72rem}
+  .legend span{display:flex; align-items:center; gap:5px}
+  .dot{width:11px; height:11px; border-radius:3px; display:inline-block}
+  .golden{margin-top:16px; font-size:.72rem; color:var(--muted); text-align:center; border-top:1px solid var(--line); padding-top:10px; max-width:420px}
+</style>
+</head>
+<body>
+<h1>🏛️ تیم هوش مصنوعی — ساختار ماژولار v3</h1>
+<div class="sub">هیچ AI رئیس دائمی نیست • تصمیم نهایی همیشه با Founder</div>
+
+<div class="flow">
+  <div class="box founder"><div class="who">FOUNDER — شما</div><div class="what">طرح مسئله</div><div class="desc">تعیین هدف</div></div>
+  <div class="arrow">▼</div>
+  <div class="box claude"><div class="who">CLAUDE — ماژول A</div><div class="what">تحلیل مسئله</div><div class="desc">شکستن به تسک‌های کوچک</div></div>
+  <div class="arrow">▼</div>
+  <div class="box claude"><div class="who">CLAUDE — ماژول B</div><div class="what">طراحی و معماری</div><div class="desc">ساختار سیستم و ارتباط اجزا</div></div>
+  <div class="arrow">▼</div>
+  <div class="side">
+    <div class="box claude"><div class="who">CLAUDE — ماژول C</div><div class="what">تحقیق و داده</div><div class="desc">مقایسه گزینه‌ها</div></div>
+    <div class="feedarrow">◄</div>
+    <div class="box gemini feeder"><div class="who">GEMINI</div><div class="what">تحقیق خارجی</div><div class="desc">جستجوی بیرونی</div></div>
+  </div>
+  <div class="arrow">▼</div>
+  <div class="box claude"><div class="who">CLAUDE — ماژول D</div><div class="what">پیاده‌سازی</div><div class="desc">تبدیل طراحی به کد</div></div>
+  <div class="arrow">▼</div>
+  <div class="box claude"><div class="who">CLAUDE — ماژول E</div><div class="what">ارزیابی و تست</div><div class="desc">کشف خطا + حکم نهایی</div></div>
+  <div class="loop">🔄 <b>حلقه بازخورد:</b> خطای ریشه‌ای ← برگشت به ماژول مقصر (حداکثر ۲ دور، بعد ارجاع به Founder)</div>
+  <div class="arrow">▼</div>
+  <div class="box gpt"><div class="who">CHATGPT — هماهنگ‌کننده</div><div class="what">جمع‌بندی + حل تضاد</div><div class="desc">فیلتر هماهنگی (توصیه، نه تصمیم)</div></div>
+  <div class="arrow">▼</div>
+  <div class="box stage"><div class="who">همه اعضا</div><div class="what">🎭 مناظره (Debate)</div><div class="desc">نقد ناشناس — تنها محل اصلاح خروجی‌ها</div></div>
+  <div class="arrow">▼</div>
+  <div class="box stage"><div class="who">اعضای نقدشده</div><div class="what">اصلاح نهایی</div></div>
+  <div class="arrow">▼</div>
+  <div class="box founder"><div class="who">FOUNDER — شما</div><div class="what">⚖️ تصمیم نهایی</div><div class="desc">ثبت در DECISIONS.md</div></div>
+  <div class="arrow">▼</div>
+  <div class="box founder"><div class="who">FOUNDER — شما</div><div class="what">🚀 اجرای نهایی + به‌روزرسانی حافظه</div><div class="desc">PROJECT • DECISIONS • STATUS</div></div>
+</div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--founder)"></i> Founder (انسان)</span>
+  <span><i class="dot" style="background:var(--claude)"></i> Claude (۵ ماژول)</span>
+  <span><i class="dot" style="background:var(--gpt)"></i> ChatGPT (هماهنگی)</span>
+  <span><i class="dot" style="background:var(--gemini)"></i> Gemini (تحقیق)</span>
+</div>
+
+<div class="golden">⚖️ قانون طلایی: تفکیک کامل وظایف ← جریان خطی ← عدم تداخل ← مناظره کنترل‌شده ← تصمیم Founder ← اجرا</div>
+</body>
+</html>

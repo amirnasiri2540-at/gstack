@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اتاق فرمان تیم AI — نسخه ۱</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#fff; --text:#1c2333; --muted:#6b7280; --line:#d7dce5;
+    --founder:#7c3aed; --claude:#2563eb; --gpt:#059669; --gemini:#d97706; --stage:#475569;
+    --ok:#059669; --accent:#7c3aed;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#0f1420; --card:#1a2233; --text:#e5e9f2; --muted:#9aa4b2; --line:#2e3a4f;
+      --founder:#c4b5fd; --claude:#93c5fd; --gpt:#6ee7b7; --gemini:#fcd34d; --stage:#cbd5e1; --ok:#34d399; --accent:#a78bfa;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Tahoma,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);padding:14px;max-width:560px;margin:0 auto}
+  h1{font-size:1.05rem;text-align:center;margin-bottom:2px}
+  .sub{color:var(--muted);font-size:.72rem;text-align:center;margin-bottom:14px}
+  .bar{display:flex;gap:4px;margin-bottom:14px}
+  .bar i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+  .bar i.done{background:var(--ok)}
+  .bar i.cur{background:var(--accent)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .who{font-size:.68rem;font-weight:bold;letter-spacing:.4px}
+  .ttl{font-size:1rem;font-weight:bold;margin:2px 0 6px}
+  .desc{font-size:.78rem;color:var(--muted);margin-bottom:10px;line-height:1.7}
+  textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit;font-size:.82rem;background:var(--bg);color:var(--text);resize:vertical}
+  button{border:0;border-radius:10px;padding:10px 14px;font-family:inherit;font-size:.82rem;font-weight:bold;cursor:pointer}
+  .btn-p{background:var(--accent);color:#fff;width:100%;margin-top:8px}
+  .btn-s{background:var(--line);color:var(--text)}
+  .row{display:flex;gap:8px;margin-top:8px}
+  .row button{flex:1}
+  .nav{display:flex;gap:8px;margin-top:4px}
+  .nav button{flex:1}
+  .prompt-box{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:10px;font-size:.72rem;white-space:pre-wrap;max-height:180px;overflow:auto;margin-top:8px;display:none}
+  .hint{font-size:.7rem;color:var(--muted);margin-top:6px;line-height:1.6}
+  .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:8px 18px;border-radius:20px;font-size:.78rem;opacity:0;transition:.3s;pointer-events:none}
+  .toast.show{opacity:1}
+  .foot{text-align:center;margin-top:6px}
+  .foot button{background:none;color:var(--muted);font-size:.68rem;text-decoration:underline}
+</style>
+</head>
+<body>
+<h1>🎛️ اتاق فرمان تیم AI</h1>
+<div class="sub">ساختار ماژولار v3 • تصمیم نهایی همیشه با Founder</div>
+<div class="bar" id="bar"></div>
+<div id="app"></div>
+<div class="nav">
+  <button class="btn-s" id="back">→ قبلی</button>
+  <button class="btn-s" id="next">بعدی ←</button>
+</div>
+<div class="foot"><button id="reset">شروع چرخه جدید (پاک‌کردن همه)</button></div>
+<div class="toast" id="toast">کپی شد ✓</div>
+
+<script>
+const CARDS = {
+ A:{who:'CLAUDE — ماژول A',color:'claude',ttl:'تحلیل مسئله',
+   card:`تو ماژول A (تحلیل مسئله) در تیم ماژولار v3 هستی. فقط تحلیل کن: مسئله را به تسک‌های کوچک بشکن و ورودی/خروجی هر تسک را تعریف کن. طراحی راه‌حل، انتخاب ابزار و کدنویسی ممنوع. اگر مشکلی خارج از قلمروت دیدی فقط در «هشدارها» بنویس. پاسخ فارسی و دقیقاً در این قالب:\n== خروجی ماژول A ==\nمسئله در یک جمله: ...\nتسک‌ها: T1: ... | ورودی: ... | خروجی: ...\nابهام‌هایی که فقط Founder می‌تواند رفع کند: ...\nهشدارها: ...`},
+ B:{who:'CLAUDE — ماژول B',color:'claude',ttl:'طراحی و معماری',
+   card:`تو ماژول B (طراحی و معماری) هستی. بر پایه خروجی ماژول A ساختار سیستم و ارتباط اجزا را طراحی کن. تغییر تسک‌بندی A، پیاده‌سازی و تحقیق بیرونی ممنوع. پاسخ فارسی در این قالب:\n== خروجی ماژول B ==\nمعماری پیشنهادی: ...\nارتباط اجزا: ...\nنیازهای تحقیق برای ماژول C: ...\nهشدارها: ...`},
+ C:{who:'CLAUDE — ماژول C',color:'claude',ttl:'تحقیق و داده',
+   card:`تو ماژول C (تحقیق و داده) هستی. به «نیازهای تحقیق» ماژول B جواب بده: اطلاعات جمع کن، منابع را بررسی و گزینه‌ها را مقایسه کن. تصمیم‌گیری بین گزینه‌ها و تغییر معماری ممنوع (فقط مقایسه). هر جواب با «اطمینان N/10» و «معتبر تا: (تاریخ/شرط)». پاسخ فارسی در این قالب:\n== خروجی ماژول C ==\nجواب هر سؤال + منابع + اطمینان + اعتبار: ...\nمقایسه گزینه‌ها: ...\nشکاف‌های اطلاعاتی باقی‌مانده: ...\nهشدارها: ...`},
+ D:{who:'CLAUDE — ماژول D',color:'claude',ttl:'پیاده‌سازی',
+   card:`تو ماژول D (پیاده‌سازی) هستی. طراحی B را با داده‌های C به نسخه اولیه (کد/فایل/نتیجه ملموس) تبدیل کن. تغییر طراحی B ممنوع (اگر شدنی نبود در هشدارها بگو). تست عمیق نکن، کار ماژول E است. پاسخ فارسی در این قالب:\n== خروجی ماژول D ==\nنسخه اولیه: ...\nدستور اجرا/استفاده: ...\nچیزهایی که آگاهانه ساده گرفتم: ...\nهشدارها: ...`},
+ E:{who:'CLAUDE — ماژول E',color:'claude',ttl:'ارزیابی و تست',
+   card:`تو ماژول E (ارزیابی و تست) هستی. خروجی D را تست کن، خطاها را پیدا کن و برای هر خطا بگو ریشه‌اش احتمالاً در کدام ماژول است (A/B/C/D). خودت تعمیر نکن، فقط گزارش. پاسخ فارسی در این قالب:\n== خروجی ماژول E ==\nتست‌های انجام‌شده: ...\nخطاها: ... (ریشه در ماژول: ...)\nپیشنهادهای بهینه‌سازی: ...\nحکم نهایی: قابل‌قبول / نیازمند برگشت به ماژول X`},
+};
+const steps=[
+ {id:'problem',who:'FOUNDER — شما',color:'founder',ttl:'۱. طرح مسئله',desc:'مسئله را در چند جمله بنویسید. هرچه دقیق‌تر، خروجی تیم بهتر. (فقط بنویسید و «بعدی» را بزنید)',input:'مسئله را اینجا بنویسید...',noPrompt:true},
+ {id:'A',...CARDS.A,num:'۲',desc:'یک چت تازه Claude باز کنید، پرامپت را کپی و ارسال کنید، بعد خروجی را اینجا بچسبانید.'},
+ {id:'B',...CARDS.B,num:'۳',desc:'چت تازه Claude ← پرامپت (خروجی A خودکار داخلش است) ← خروجی را بچسبانید.'},
+ {id:'gemini',who:'GEMINI — تحقیق خارجی',color:'gemini',ttl:'۴. جستجوی بیرونی (اختیاری)',desc:'پرامپت را به Gemini بدهید تا «نیازهای تحقیق» ماژول B را از وب جواب دهد. اگر عجله دارید، خالی رد شوید.'},
+ {id:'C',...CARDS.C,num:'۵',desc:'چت تازه Claude ← پرامپت (خروجی B + یافته‌های Gemini داخلش است) ← خروجی را بچسبانید.'},
+ {id:'D',...CARDS.D,num:'۶',desc:'چت تازه Claude ← پرامپت ← خروجی را بچسبانید.'},
+ {id:'E',...CARDS.E,num:'۷',desc:'چت تازه Claude ← پرامپت ← خروجی را بچسبانید. اگر حکم «برگشت» بود: حداکثر ۲ دور به ماژول مقصر برگردید.'},
+ {id:'synth',who:'CHATGPT — هماهنگ‌کننده',color:'gpt',ttl:'۸. جمع‌بندی و حل تضاد',desc:'پرامپت را به ChatGPT بدهید (همه خروجی‌ها داخلش است) و جمع‌بندی‌اش را اینجا بچسبانید. جمع‌بندی توصیه است، نه تصمیم.'},
+ {id:'debate',who:'همه اعضا',color:'stage',ttl:'۹. مناظره (نقد ناشناس)',desc:'پرامپت مناظره را به Claude و Gemini بدهید (جمع‌بندی بی‌نام داخلش است) و نقدها را اینجا بچسبانید.'},
+ {id:'decision',who:'FOUNDER — شما',color:'founder',ttl:'۱۰. تصمیم نهایی',desc:'با دیدن جمع‌بندی و نقدها، تصمیم نهایی را در یک‌دو جمله بنویسید. این تنها تصمیم چرخه است و فقط مال شماست.',input:'تصمیم من: ...',noPrompt:true},
+ {id:'memory',who:'حافظه مشترک',color:'founder',ttl:'۱۱. بلوک به‌روزرسانی حافظه',desc:'این بلوک خودکار ساخته شده. کپی کنید و در فایل‌های DECISIONS.md و STATUS.md در پوشه Drive بچسبانید. چرخه کامل شد 🎉',noInput:true,noPrompt:true},
+];
+let cur=+(localStorage.getItem('cur')||0);
+const S=k=>localStorage.getItem('s_'+k)||'';
+const put=(k,v)=>localStorage.setItem('s_'+k,v);
+
+function prompt_(st){
+ const mem='(اگر فایل‌های حافظه PROJECT/DECISIONS/STATUS را داری، اول آن‌ها را هم بچسبان.)';
+ if(st.id==='gemini') return 'تو لایه تحقیق خارجی تیم ما هستی. این «نیازهای تحقیق» را با جستجوی وب جواب بده، چند منبع مقایسه کن، پاسخ فارسی:\n\n'+S('B');
+ if(st.id==='synth') return 'تو هماهنگ‌کننده منطقی تیم ماژولار ما هستی. خروجی ماژول‌ها را جمع‌بندی کن، تضادها را نام ببر و حل پیشنهادی بده. جمع‌بندی تو توصیه است، تصمیم با Founder. پاسخ فارسی.\n\nمسئله: '+S('problem')+'\n\n'+['A','B','C','D','E'].map(m=>S(m)).join('\n\n');
+ if(st.id==='debate') return 'یک جمع‌بندی از «عضو ناشناس» تیم به تو نشان می‌دهم. نقد کن: چه درست، چه غلط، چه جا افتاده، چه چیزی نظرت را عوض می‌کند. هر ادعا با اطمینان N/10. پاسخ فارسی:\n\n'+S('synth');
+ return st.card+'\n\n'+mem+'\n\nورودی:\n'+(st.id==='A'?S('problem'):st.id==='C'?S('B')+'\n\nیافته‌های تحقیق خارجی:\n'+(S('gemini')||'(ندارد)'):st.id==='D'?S('B')+'\n\n'+S('C'):S(['B','C','D','E','A'].includes(st.id)?{B:'A',C:'B',D:'C',E:'D'}[st.id]:''));
+}
+function memBlock(){
+ const d=new Date().toLocaleDateString('fa-IR');
+ return '=== APPEND to DECISIONS.md ===\n## D-XXX | تاریخ: '+d+' | وضعیت: فعال\nتصمیم: '+(S('decision')||'(نوشته نشد)')+'\nچرا: نتیجه چرخه کامل ماژولار (A تا E + جمع‌بندی + مناظره)\nاطمینان: (خودتان بگذارید)/10\nپیشنهاددهنده: Founder\n\n=== REPLACE STATUS.md with ===\n# STATUS.md\nآخرین به‌روزرسانی: '+d+' — توسط: Founder (اتاق فرمان)\nمرحله فعلی: پایان یک چرخه کامل\nآخرین کارها: '+(S('D')?S('D').split('\n').slice(1,3).join(' | '):'—')+'\nقدم بعدی: طبق تصمیم: '+(S('decision')||'—')+'\nیادداشت تحویل: عضو جدید اول PROJECT.md بعد DECISIONS.md بعد همین فایل را بخواند.';
+}
+function copyTxt(t){
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,()=>fb(t));}else fb(t);
+ function ok(){const e=document.getElementById('toast');e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1200);}
+ function fb(t){const b=document.getElementById('pbox');b.style.display='block';b.textContent=t;const r=document.createRange();r.selectNodeContents(b);const s=getSelection();s.removeAllRanges();s.addRange(r);}
+}
+function render(){
+ const st=steps[cur];
+ document.getElementById('bar').innerHTML=steps.map((_,i)=>'<i class="'+(i<cur?'done':i===cur?'cur':'')+'"></i>').join('');
+ let h='<div class="card"><div class="who" style="color:var(--'+st.color+')">'+st.who+'</div><div class="ttl">'+(st.num?st.num+'. ':'')+st.ttl+'</div><div class="desc">'+st.desc+'</div>';
+ if(!st.noPrompt) h+='<button class="btn-p" id="cp">📋 کپی پرامپت این مرحله</button><div class="prompt-box" id="pbox"></div><div class="hint">اگر دکمه کپی کار نکرد، متن پایین ظاهر و انتخاب می‌شود — دستی کپی کنید.</div>';
+ if(st.id==='memory') h+='<div class="prompt-box" id="pbox" style="display:block">'+memBlock().replace(/</g,'&lt;')+'</div><button class="btn-p" id="cm">📋 کپی بلوک حافظه</button>';
+ if(!st.noInput) h+='<textarea id="ta" placeholder="'+(st.input||'خروجی این مرحله را اینجا بچسبانید...')+'">'+S(st.id).replace(/</g,'&lt;')+'</textarea>';
+ h+='</div>';
+ document.getElementById('app').innerHTML=h;
+ const ta=document.getElementById('ta'); if(ta) ta.oninput=()=>put(st.id,ta.value);
+ const cp=document.getElementById('cp'); if(cp) cp.onclick=()=>copyTxt(prompt_(st));
+ const cm=document.getElementById('cm'); if(cm) cm.onclick=()=>copyTxt(memBlock());
+ document.getElementById('back').style.visibility=cur?'visible':'hidden';
+ document.getElementById('next').textContent=cur===steps.length-1?'پایان چرخه ✓':'بعدی ←';
+}
+document.getElementById('back').onclick=()=>{if(cur>0){cur--;localStorage.setItem('cur',cur);render();}};
+document.getElementById('next').onclick=()=>{if(cur<steps.length-1){cur++;localStorage.setItem('cur',cur);render();}else{alert('چرخه کامل شد! 🎉 بلوک حافظه را در فایل‌های Drive بچسبانید و برای چرخه بعد «شروع چرخه جدید» را بزنید.');}};
+document.getElementById('reset').onclick=()=>{if(confirm('همه داده‌های این چرخه پاک شود؟')){localStorage.clear();cur=0;render();}};
+render();
+</script>
+</body>
+</html>

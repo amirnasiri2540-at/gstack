@@ -1,0 +1,27 @@
+{
+  "name": "aos-maestro",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "setup": "node src/adapters/setup.ts",
+    "aos": "node src/adapters/cli.ts",
+    "aos:resume": "node src/adapters/resume.ts",
+    "replay": "node src/adapters/replay.ts",
+    "test": "node --test 'test/**/*.test.ts'",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "js-yaml": "^4.1.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.18.0",
+    "typescript": "^5.9.3"
+  }
+}

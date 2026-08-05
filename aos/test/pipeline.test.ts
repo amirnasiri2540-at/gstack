@@ -211,6 +211,42 @@ test('an artifact path that escapes the sandbox costs that file, not the run', a
   fs.rmSync(h.dir, { recursive: true, force: true });
 });
 
+test('a replay reproduces the run exactly, with zero calls to the transport', async () => {
+  const first = harness();
+  await drive(first);
+  const original = JSON.parse(fs.readFileSync(first.deps.paths.workorder, 'utf-8'));
+
+  // Feed the recorded responses back in. Nothing else changes.
+  const recorded = new Map(
+    eventsOfType(first.events(), 'model.response').map((e) => [e.hash, { text: e.text, usage: e.usage }]),
+  );
+  let liveCalls = 0;
+  const second = harness();
+  second.deps.ctx.transport = {
+    kind: 'replay',
+    async send(req) {
+      const hit = recorded.get(req.hash);
+      if (!hit) {
+        liveCalls++;
+        throw new AosError('REPLAY_MISS', `unrecorded call for ${req.model}`, {});
+      }
+      return hit;
+    },
+  };
+
+  const { error } = await drive(second);
+  assert.equal(error, null);
+  assert.equal(liveCalls, 0, 'a replay that reaches for the network is not a replay');
+
+  const replayed = JSON.parse(fs.readFileSync(second.deps.paths.workorder, 'utf-8'));
+  // Injected time and identity are what make this an equality rather than a
+  // rough resemblance; ambient Date.now() would leak into every id.
+  assert.deepEqual(replayed, original);
+
+  fs.rmSync(first.dir, { recursive: true, force: true });
+  fs.rmSync(second.dir, { recursive: true, force: true });
+});
+
 test('an S1 defect sends the work back to FORGE exactly once', async () => {
   let sentinelCalls = 0;
   const h = harness({

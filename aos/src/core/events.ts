@@ -87,12 +87,24 @@ export class EventLog {
   #clock: Sequencer;
   #listeners: Array<(e: AosEvent) => void> = [];
 
-  constructor(file: string, clock: Sequencer) {
+  /**
+   * `startSeq` continues an existing log rather than restarting its numbering,
+   * which is what a founder verdict arriving hours later needs: one unbroken
+   * sequence per run, still append-only, still never rewritten.
+   */
+  constructor(file: string, clock: Sequencer, startSeq = 0) {
     this.#file = file;
     this.#clock = clock;
+    this.#seq = startSeq;
     fs.mkdirSync(path.dirname(file), { recursive: true });
     // Opening in append mode is the whole durability story. Nothing truncates.
     fs.appendFileSync(file, '');
+  }
+
+  /** Opens an existing log and continues its sequence from the last entry. */
+  static continue(file: string, clock: Sequencer): EventLog {
+    const existing = readEvents(file);
+    return new EventLog(file, clock, existing.at(-1)?.seq ?? 0);
   }
 
   get file(): string {

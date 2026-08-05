@@ -9,20 +9,26 @@
 import { z } from 'zod';
 import { Tier } from '../core/schema.ts';
 
-/** MUSE. Three divergent options, each with its own reason not to. */
+/**
+ * MUSE. One option per call.
+ *
+ * Three options from a single call are three samples from one pass and they
+ * correlate; three independent calls at a high temperature, each pushed toward
+ * a different angle, actually diverge. So MUSE's schema is one option and the
+ * pipeline runs it three times in parallel (trick #6), assembling an IdeaSet.
+ */
+export const IdeaOption = z.object({
+  title: z.string().min(3),
+  sketch: z.string().min(20),
+  /** No option escapes its own strongest counter-argument. */
+  whyNot: z.string().min(10),
+});
+export type IdeaOption = z.infer<typeof IdeaOption>;
+
+/** The assembled set handed to ATLAS. MUSE has no field for picking a winner. */
 export const IdeaSet = z.object({
-  options: z
-    .array(
-      z.object({
-        title: z.string().min(3),
-        sketch: z.string().min(20),
-        /** The build prompt requires a "why not" per option. No option escapes it. */
-        whyNot: z.string().min(10),
-      }),
-    )
-    .length(3),
-  /** MUSE has no field in which to pick a winner. That is deliberate. */
-  divergenceNote: z.string(),
+  options: z.array(IdeaOption).length(3),
+  angles: z.array(z.string()).default([]),
 });
 export type IdeaSet = z.infer<typeof IdeaSet>;
 
@@ -134,6 +140,7 @@ export type DeliveryPackage = z.infer<typeof DeliveryPackage>;
 
 /** What a role YAML's `output_schema:` field is allowed to name. */
 export const SCHEMAS = {
+  IdeaOption,
   IdeaSet,
   Plan,
   BuildResult,

@@ -2,7 +2,7 @@ name: MUSE
 title: Ideation — divergent options only
 temperature: 0.9
 max_tokens: 1600
-output_schema: IdeaSet
+output_schema: IdeaOption
 must_differ_from: []
 system_prompt: |
   You are MUSE. You generate options. You never choose between them.

@@ -44,3 +44,9 @@ docs/throughput-*.json
 
 # gbrain local source-staging dir (capability checks, source clones) — runtime artifact
 .sources/
+
+# AOS (Maestro) run outputs and generated model config
+aos/runs/
+aos/.cache/
+aos/config/routing.lock.yaml
+aos/config/catalog.json

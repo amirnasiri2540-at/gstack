@@ -138,6 +138,7 @@ test('a slug missing from the catalog fails before any spend', async () => {
 test('the http transport refuses to send an offline stub slug', async () => {
   const t = httpTransport({ baseUrl: 'https://example.invalid/v1', apiKey: 'unused' });
   const req: TransportRequest = {
+    role: 'ATLAS',
     model: MODEL,
     messages: MESSAGES,
     temperature: 0.2,

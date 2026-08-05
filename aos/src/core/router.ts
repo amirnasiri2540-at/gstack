@@ -127,6 +127,7 @@ export async function callModel(ctx: RouterContext, call: ModelCall): Promise<Mo
   let response: { text: string; usage: TokenUsage };
   try {
     response = await ctx.transport.send({
+      role: call.role,
       model: call.model,
       messages: call.messages,
       temperature: call.temperature,

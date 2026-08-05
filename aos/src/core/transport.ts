@@ -21,6 +21,8 @@ export interface Message {
 }
 
 export interface TransportRequest {
+  /** Whose call this is. The http transport ignores it; mocks and logs do not. */
+  role: string;
   model: string;
   messages: Message[];
   temperature: number;

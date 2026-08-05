@@ -1,0 +1,60 @@
+# Model routing. THIS IS A HYPOTHESIS, NOT A RANKING.
+#
+# This file holds a human guess about which *kind* of model suits which role: a
+# provider preference order and a price tier. It deliberately contains no model
+# slugs. `npm run setup` resolves these preferences against the router's live
+# model list and writes the result to config/routing.lock.yaml.
+#
+# Constraint C7 exists because a model id typed from memory fails as a 404 three
+# roles into a paid run. Slugs live in the generated lock file so that "never
+# hand-edit a slug" is structural rather than polite.
+#
+# Feature 6.2 (the scoreboard) is what replaces this guess with measurement.
+# After roughly ten founder verdicts per role/model pair, the scoreboard can
+# tell you what your own workload actually prefers. Nobody else can.
+
+version: 1
+
+roles:
+  # Divergence and breadth beat precision here, and it is the cheapest place to
+  # burn tokens, so options are generated in parallel at a low tier.
+  MUSE:
+    prefer: [google, openai, x-ai]
+    tier: cheap
+    minContext: 32000
+    secondOpinion: false
+
+  # Long instruction chains, tool discipline, holding structure across a run.
+  ATLAS:
+    prefer: [anthropic, openai]
+    tier: mid
+    minContext: 100000
+    secondOpinion: false
+
+  FORGE:
+    prefer: [anthropic, openai]
+    tier: mid
+    minContext: 100000
+    secondOpinion: false
+
+  # Two providers disagreeing is the signal. One provider agreeing is noise, and
+  # a critic sharing a provider with the builder tends to share its blind spots,
+  # which is what must_differ_from in roles/echo.yaml enforces.
+  ECHO:
+    prefer: [google, openai]
+    tier: mid
+    minContext: 100000
+    secondOpinion: true
+
+  SENTINEL:
+    prefer: [anthropic, openai]
+    tier: mid
+    minContext: 100000
+    secondOpinion: false
+
+  # Formatting and packaging only. Never pay top-tier prices for markdown.
+  HERALD:
+    prefer: [google, openai, anthropic]
+    tier: cheap
+    minContext: 32000
+    secondOpinion: false

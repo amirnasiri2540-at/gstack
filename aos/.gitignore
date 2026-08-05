@@ -2,3 +2,5 @@ node_modules/
 runs/
 .cache/
 .env
+config/routing.lock.yaml
+config/catalog.json

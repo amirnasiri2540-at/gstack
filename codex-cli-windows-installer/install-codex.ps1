@@ -3,10 +3,16 @@
     One-command installer for the OpenAI Codex CLI on Windows.
 
 .DESCRIPTION
-    - Verifies Node.js and npm are installed.
-    - Installs the OpenAI Codex CLI globally via npm.
+    - Verifies Node.js and npm are installed (never installs them for you).
+    - Skips the npm install step if the Codex CLI is already on PATH, so
+      re-running this script on a machine that already has everything set
+      up does nothing but refresh the launcher and shortcuts.
     - Copies the launcher script into a per-user install folder.
     - Creates "OpenAI Codex" shortcuts on the Desktop and in the Start Menu.
+
+.PARAMETER Force
+    Reinstall the Codex CLI via npm even if the codex command already
+    exists on PATH.
 
 .USAGE
     Download this file together with launch-codex.ps1 and create-shortcut.ps1
@@ -14,11 +20,15 @@
 
         powershell -ExecutionPolicy Bypass -File install-codex.ps1
 
-    No administrator rights are required.
+    No administrator rights are required. Already have Node.js, npm, or
+    the Codex CLI installed? The script detects that and skips those
+    steps automatically - you don't need to do anything differently.
 #>
 
 [CmdletBinding()]
-param()
+param(
+    [switch]$Force
+)
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -56,16 +66,28 @@ try {
     }
     Write-Ok "npm $(npm -v) found"
 
-    Write-Step "Installing OpenAI Codex CLI (npm install -g @openai/codex)"
-    npm install -g @openai/codex
-    if ($LASTEXITCODE -ne 0) {
-        throw "npm install exited with code $LASTEXITCODE. Check the npm output above for details."
+    Write-Step "Checking whether the Codex CLI is already installed"
+    if ((Test-CommandExists 'codex') -and -not $Force) {
+        $installedVersion = $null
+        try { $installedVersion = (codex --version) 2>$null } catch { }
+        if ($installedVersion) {
+            Write-Ok "Codex CLI already installed ($installedVersion) - skipping npm install"
+        } else {
+            Write-Ok "Codex CLI already installed - skipping npm install"
+        }
     }
-    Write-Ok "OpenAI Codex CLI installed"
+    else {
+        Write-Step "Installing OpenAI Codex CLI (npm install -g @openai/codex)"
+        npm install -g @openai/codex
+        if ($LASTEXITCODE -ne 0) {
+            throw "npm install exited with code $LASTEXITCODE. Check the npm output above for details."
+        }
+        Write-Ok "OpenAI Codex CLI installed"
+    }
 
     Write-Step "Verifying the codex command is available"
     if (-not (Test-CommandExists 'codex')) {
-        throw "The 'codex' command was not found after installation. Open a new terminal and try 'npm install -g @openai/codex' manually, then re-run this script."
+        throw "The 'codex' command was not found. Open a new terminal and try 'npm install -g @openai/codex' manually, then re-run this script."
     }
     Write-Ok "codex command is available"
 

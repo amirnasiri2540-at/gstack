@@ -8,14 +8,19 @@ by hand again.
 ## What it does
 
 1. Checks that Node.js and npm are installed (and tells you clearly if
-   they're not).
-2. Installs the Codex CLI globally: `npm install -g @openai/codex`.
+   they're not — it never installs Node/npm for you).
+2. Checks whether the `codex` command already exists. If it does, the
+   `npm install -g @openai/codex` step is **skipped** — running the
+   installer again on a machine that already has everything is safe and
+   fast, it just refreshes the launcher and shortcuts. Pass `-Force` to
+   `install-codex.ps1` if you want to force a reinstall anyway.
 3. Copies a launcher script to `%LOCALAPPDATA%\OpenAICodex`.
 4. Creates "OpenAI Codex" shortcuts on your Desktop and in the Start Menu
    that open a PowerShell window and start `codex`.
 
 No administrator rights are required — everything installs to your user
-profile.
+profile. Already have some of the prerequisites? Nothing extra to do —
+the script detects what's present and only installs what's missing.
 
 ## Install
 

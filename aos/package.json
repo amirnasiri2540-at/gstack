@@ -11,7 +11,7 @@
     "aos": "node src/adapters/cli.ts",
     "aos:resume": "node src/adapters/resume.ts",
     "replay": "node src/adapters/replay.ts",
-    "test": "node --test 'test/**/*.test.ts'",
+    "test": "node --test \"test/**/*.test.ts\"",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

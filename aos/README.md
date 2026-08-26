@@ -85,8 +85,25 @@ OpenAI-compatible `/chat/completions` works. The key is `AOS_ROUTER_API_KEY` (or
 ## Development
 
 ```bash
-npm test          # 40 tests, no network, no key, under a second
+npm test          # 41 tests, no network, no key, under a second
 npm run typecheck
 ```
 
 Runs on Node 22 type stripping. No build step, no bundler, no `tsx`.
+
+## Portability
+
+Linux, macOS and Windows all run the same source. There is no compile step and
+no native dependency, so there is nothing to rebuild when you move the checkout
+between them: `git clone`, `npm install`, `npm run setup`, done.
+
+Two Windows details are handled rather than assumed. Test globs are
+double-quoted, because `cmd.exe` does not strip single quotes and Node would
+then match zero files and exit 0 — a green suite that ran nothing. And the
+symlink-escape test skips itself when symlink creation returns EPERM, which is
+what Windows does without Developer Mode; the sandbox behaviour it checks still
+holds there, only the test setup is privileged.
+
+The one thing that does not travel is `runs/`, `.cache/` and
+`config/routing.lock.yaml`. Those are machine state, they are gitignored, and
+`npm run setup` regenerates the lock file wherever you land.

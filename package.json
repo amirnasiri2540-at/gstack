@@ -49,7 +49,7 @@
     "slop:diff": "bun run scripts/slop-diff.ts",
     "aos": "node aos/src/adapters/cli.ts",
     "aos:setup": "node aos/src/adapters/setup.ts",
-    "aos:test": "node --test 'aos/test/**/*.test.ts'",
+    "aos:test": "node --test \"aos/test/**/*.test.ts\"",
     "aos:resume": "node aos/src/adapters/resume.ts",
     "aos:replay": "node aos/src/adapters/replay.ts"
   },

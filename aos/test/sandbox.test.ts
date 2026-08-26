@@ -66,11 +66,29 @@ test('writeArtifact returns a run-relative path and byte count', () => {
   fs.rmSync(root, { recursive: true, force: true });
 });
 
-test('a symlinked parent inside the sandbox is still refused', () => {
+/**
+ * Creating a symlink on Windows needs Developer Mode or an elevated shell, so
+ * this one is skipped there rather than failing. The behaviour it checks still
+ * holds on Windows; only the setup for the test is privileged.
+ */
+function canSymlink(target: string, at: string): boolean {
+  try {
+    fs.symlinkSync(target, at);
+    return true;
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'EPERM') return false;
+    throw err;
+  }
+}
+
+test('a symlinked parent inside the sandbox is still refused', (t) => {
   const { root, p } = fixture();
   const escape = path.join(root, 'escape');
   fs.mkdirSync(escape);
-  fs.symlinkSync(escape, path.join(p.artifactsDir, 'link'));
+  if (!canSymlink(escape, path.join(p.artifactsDir, 'link'))) {
+    fs.rmSync(root, { recursive: true, force: true });
+    return t.skip('symlink creation needs Developer Mode on Windows');
+  }
   assert.throws(
     () => safeArtifactPath(p, 'link/pwned.html'),
     (err: unknown) => err instanceof AosError && err.code === 'PATH_ESCAPE',

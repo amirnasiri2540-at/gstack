@@ -214,6 +214,34 @@ npm install -g @agentclientprotocol/codex-acp
 
 **Buzz Agent** — داخلی است. نه CLI می‌خواهد نه آداپتور. همیشه `READY`.
 
+### Goose بعد از نصب هنوز کار نمی‌کند — provider می‌خواهد
+
+دستور نصب رسمی `CONFIGURE=false` دارد، یعنی **عمداً بدون تنظیمات** نصب می‌شود.
+`goose --version` جواب می‌دهد ولی Buzz ایجنت را آماده نمی‌داند، چون preset اش
+`required_normalized_fields: ["model", "provider"]` است.
+
+```bash
+goose configure
+```
+
+یا از داخل Buzz: `Settings → Agents` → ایجنت Goose → provider و model را همان‌جا
+بگذار. Buzz آنها را با `GOOSE_PROVIDER` و `GOOSE_MODEL` پاس می‌دهد.
+
+**انتظارِ درست دربارهٔ کلید:** لاگین اشتراکی Claude یا ChatGPT که برای Claude Code
+و Codex انجام دادی، به Goose منتقل نمی‌شود. مگر اینکه در لیست providerها گزینه‌ای
+باشد که از همان CLI احراز‌هویت‌شده استفاده کند، وگرنه برای provider انتخابی‌ات یک
+API key جدا لازم داری که جداگانه هزینه دارد.
+
+### آداپتورها را در PATH سیستم نگرد
+
+```bash
+which codex-acp claude-agent-acp      # هیچی برنمی‌گرداند — طبیعی است
+ls ~/.local/share/Buzz/node-tools/bin/  # claude-agent-acp  codex-acp
+```
+
+Buzz آداپتورها را در پوشهٔ خودش نصب می‌کند و از همان‌جا صدایشان می‌زند. خالی بودن
+`which` نشانهٔ خرابی نیست.
+
 ### تلهٔ آداپتور منسوخ
 
 بسته‌های `@zed-industries/*` نسل قبلی‌اند و Buzz ردشان می‌کند. اگر کارت
